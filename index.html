@@ -118,6 +118,60 @@ footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px
       <p class="muted">පැමිණිලි ලබාගනිමින්...</p>
     </div>
   </div>
+   <div class="panel">
+    <h3>🎬 Add Movie / TV Series | අලුත් චිත්‍රපටයක් එක් කරන්න</h3>
+
+    <form id="addCinemaForm">
+
+      <label>චිත්‍රපටයේ නම</label>
+      <input id="cinemaTitle" type="text" required maxlength="150">
+
+      <label>විස්තරය</label>
+      <textarea id="cinemaDescription" maxlength="3000"
+        style="width:100%;min-height:90px;padding:12px"></textarea>
+
+      <label>අන්තර්ගත වර්ගය</label>
+      <select id="cinemaType" required>
+        <option value="movie">Movie | චිත්‍රපටය</option>
+        <option value="tv_series">TV Series | රූපවාහිනී මාලාව</option>
+      </select>
+
+      <label>භාෂාව</label>
+      <select id="cinemaLanguage" required>
+        <option value="Sinhala">Sinhala</option>
+        <option value="English">English</option>
+        <option value="Hindi">Hindi</option>
+        <option value="Tamil">Tamil</option>
+        <option value="Korean">Korean</option>
+        <option value="Japanese">Japanese</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label>නිකුත් වූ වර්ෂය</label>
+      <input id="cinemaYear" type="number" min="1888" max="2100">
+
+      <label>චිත්‍රපට වර්ගය (Genre)</label>
+      <input id="cinemaGenre" type="text" placeholder="Action, Comedy, Drama...">
+
+      <label>Poster URL</label>
+      <input id="cinemaPoster" type="url">
+
+      <label>Watch URL</label>
+      <input id="cinemaWatch" type="url">
+
+      <label>
+        <input id="cinemaPublish" type="checkbox" style="width:auto">
+        Publish Now | දැන්ම පළ කරන්න
+      </label>
+
+      <button class="primary" type="submit">
+        ＋ Add to Cinema Library
+      </button>
+
+      <p id="cinemaFormMessage" class="muted"></p>
+
+    </form>
+  </div>
 </section>
 <section id="memberProfile" style="display:none"><h2>My Profile | මගේ පැතිකඩ</h2><div class="panel">
 <div class="avatar-area">

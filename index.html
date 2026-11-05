@@ -26,7 +26,25 @@ footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px
 </style>
 </head>
 <body>
-<header><div class="logo">CINEමා <span>WORLD</span><small>ONE WORLD. ALL MOVIES. ONE CINEMA.</small></div><button class="primary" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Join / Login</button></header>
+<header>
+  <div class="logo">
+    CINEමා <span>WORLD</span>
+    <small>ONE WORLD. ALL MOVIES. ONE CINEMA.</small>
+  </div>
+
+  <div style="display:flex;gap:8px">
+    <button class="primary" id="joinLoginNav"
+      onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">
+      Join / Login
+    </button>
+
+    <button class="primary" id="myProfileNav"
+      style="display:none"
+      onclick="document.getElementById('memberProfile').scrollIntoView({behavior:'smooth'})">
+      👤 My Profile
+    </button>
+  </div>
+</header>
 <main>
 <section class="hero"><div class="tag">YOUR GLOBAL MOVIE COMMUNITY</div><h1>එකම තිරයක්.<br>ලොව පුරා සිනමා රසිකයෝ.</h1><p>චිත්‍රපට සහ වැඩසටහන් එකට නරඹන්න, කතාබහ කරන්න, අදහස් සහ ශ්‍රේණිගත කිරීම් බෙදාගන්න.</p><div class="actions"><button class="primary" onclick="document.getElementById('schedule').scrollIntoView({behavior:'smooth'})">View Programs</button><button class="outline" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Create Account / Login</button></div></section>
 <section id="movieSearch">
@@ -194,6 +212,13 @@ const loginMessage = document.getElementById("loginMessage");
 const signupButton = document.getElementById("signupButton");
 const loginButton = document.getElementById("loginButton");
 const logoutButton = document.getElementById("logoutButton");
+  const joinLoginNav = document.getElementById("joinLoginNav");
+const myProfileNav = document.getElementById("myProfileNav");
+
+function updateNav(isLoggedIn) {
+  joinLoginNav.style.display = isLoggedIn ? "none" : "block";
+  myProfileNav.style.display = isLoggedIn ? "block" : "none";
+}
 function showMessage(box, message, type) { box.textContent = message; box.className = type || ""; }
 
 if (!window.supabase) {
@@ -695,6 +720,7 @@ if (!window.supabase) {
       const { data, error } = await client.auth.signInWithPassword({ email, password });
       if (error) throw error;
       await loadProfile(data.user);
+      updateNav(true);
       await loadCommunity();
       await loadMovieReviews();
       await loadWatchlist();
@@ -724,12 +750,16 @@ if (!window.supabase) {
     if (error) { showMessage(loginMessage, "ගිණුම් තත්ත්වය ලබාගැනීමට නොහැකි වුණා.", "error"); return; }
     if (data.session) {
       await loadProfile(data.session.user);
+      updateNav(true);
       await loadCommunity();
       await loadMovieReviews();
       await loadWatchlist();
       showMessage(loginMessage, "ඔබ දැනටමත් CINEමා WORLD ගිණුමට ඇතුළු වී සිටිනවා.", "success");
       logoutButton.style.display = "block";
-    } else hideProfile();
+   } else {
+  hideProfile();
+  updateNav(false);
+}
   });
 }
 </script>

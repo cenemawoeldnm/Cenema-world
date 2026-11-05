@@ -711,6 +711,7 @@ if (!window.supabase) {
     if (error) showMessage(loginMessage, "Logout කිරීමේ දෝෂයක්: " + error.message, "error");
     else {
       hideProfile();
+      updateNav(false);
       document.getElementById("community").style.display = "none";
       document.getElementById("movieReviews").style.display = "none";
       document.getElementById("watchlistSection").style.display = "none";

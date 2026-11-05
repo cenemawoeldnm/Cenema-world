@@ -29,7 +29,15 @@ footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px
 <header><div class="logo">CINEමා <span>WORLD</span><small>ONE WORLD. ALL MOVIES. ONE CINEMA.</small></div><button class="primary" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Join / Login</button></header>
 <main>
 <section class="hero"><div class="tag">YOUR GLOBAL MOVIE COMMUNITY</div><h1>එකම තිරයක්.<br>ලොව පුරා සිනමා රසිකයෝ.</h1><p>චිත්‍රපට සහ වැඩසටහන් එකට නරඹන්න, කතාබහ කරන්න, අදහස් සහ ශ්‍රේණිගත කිරීම් බෙදාගන්න.</p><div class="actions"><button class="primary" onclick="document.getElementById('schedule').scrollIntoView({behavior:'smooth'})">View Programs</button><button class="outline" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Create Account / Login</button></div></section>
-<section><h2>Featured Movies</h2><div class="grid">
+<section id="movieSearch">
+  <h2>🔍 Search Movies | චිත්‍රපට සොයන්න</h2>
+  <div class="panel">
+    <input type="search" id="movieSearchInput"
+      placeholder="චිත්‍රපටයේ නම ඇතුළත් කරන්න...">
+    <p id="movieSearchMessage" class="muted">චිත්‍රපටයක් සොයන්න.</p>
+  </div>
+</section>
+<section><h2>Featured Movies</h2><div class="grid" id="featuredMoviesGrid">
 <article class="card"><div class="poster">🎬</div><span class="pill">FEATURED</span><h3>සුහද කොකා</h3><p class="muted">Sinhala Comedy · Film listing demo</p></article>
 <article class="card"><div class="poster">🌌</div><span class="pill">PUBLIC-DOMAIN TEST</span><h3>Classic Cinema</h3><p class="muted">A sample slot for rights-cleared films</p></article>
 <article class="card"><div class="poster">🎞️</div><span class="pill">COMING SOON</span><h3>World Cinema</h3><p class="muted">International film collection</p></article>
@@ -704,6 +712,37 @@ if (!window.supabase) {
     } else hideProfile();
   });
 }
+</script>
+<script>
+(function () {
+  const input = document.getElementById("movieSearchInput");
+  const message = document.getElementById("movieSearchMessage");
+  const grid = document.getElementById("featuredMoviesGrid");
+
+  if (!input || !message || !grid) return;
+
+  input.addEventListener("input", function () {
+    const query = input.value.trim().toLocaleLowerCase();
+    const cards = Array.from(grid.querySelectorAll(".card"));
+    let visible = 0;
+
+    cards.forEach(function (card) {
+      const matches = card.textContent.toLocaleLowerCase().includes(query);
+
+      card.style.display = matches ? "" : "none";
+
+      if (matches) visible++;
+    });
+
+    if (!query) {
+      message.textContent = "චිත්‍රපටයක් සොයන්න.";
+    } else if (visible > 0) {
+      message.textContent = visible + " ප්‍රතිඵල හමු වුණා.";
+    } else {
+      message.textContent = "ගැළපෙන චිත්‍රපට හමු වුණේ නැහැ.";
+    }
+  });
+})();
 </script>
 </body>
 </html>

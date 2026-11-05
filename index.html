@@ -406,9 +406,52 @@ card.appendChild(resolveButton);
     reportsBox.appendChild(card);
   });
 }
-  හ
- 
-    const { data: sessionData } = await client.auth.getSession();
+  document.getElementById("addCinemaForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const message = document.getElementById("cinemaFormMessage");
+  const button = this.querySelector('button[type="submit"]');
+
+  const { data: sessionData } = await client.auth.getSession();
+  const user = sessionData.session?.user;
+
+  if (!user) {
+    message.textContent = "කරුණාකර Admin ගිණුමට Login වන්න.";
+    return;
+  }
+
+  button.disabled = true;
+  message.textContent = "චිත්‍රපට තොරතුරු සුරකිමින්...";
+
+  try {
+    const { error } = await client.from("cinema_library").insert({
+      title: document.getElementById("cinemaTitle").value.trim(),
+      description: document.getElementById("cinemaDescription").value.trim(),
+      content_type: document.getElementById("cinemaType").value,
+      language: document.getElementById("cinemaLanguage").value,
+      release_year: document.getElementById("cinemaYear").value
+        ? Number(document.getElementById("cinemaYear").value)
+        : null,
+      genre: document.getElementById("cinemaGenre").value.trim(),
+      poster_url: document.getElementById("cinemaPoster").value.trim() || null,
+      watch_url: document.getElementById("cinemaWatch").value.trim() || null,
+      is_published: document.getElementById("cinemaPublish").checked,
+      created_by: user.id
+    });
+
+    if (error) throw error;
+
+    this.reset();
+    message.textContent = "✅ චිත්‍රපටය සාර්ථකව සුරැකුණා!";
+
+  } catch (error) {
+    message.textContent = "දෝෂයක්: " + error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+
+document.getElementById("editProfileForm").addEventListener("submit", async function(event) {
     const user = sessionData.session?.user;
     if (!user) {
       showMessage(document.getElementById("profileMessage"), "කරුණාකර නැවත Login වෙන්න.", "error");

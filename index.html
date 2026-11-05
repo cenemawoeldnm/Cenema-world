@@ -534,6 +534,7 @@ if (!window.supabase) {
           '<div class="row"><strong>' + escapeCommunityText(display) + '</strong><span class="muted">' + escapeCommunityText(date) + '</span></div>' +
           '<p style="white-space:pre-wrap">' + escapeCommunityText(post.body) + '</p>' +
           '<button class="outline" type="button" data-reply-to="' + escapeCommunityText(post.id) + '">Reply | පිළිතුරු</button>' +
+          '<button class="outline" type="button" data-report-user="' + escapeCommunityText(post.author_id) + '" data-report-content="' + escapeCommunityText(post.id) + '" data-report-type="comment">🚩 Report | වාර්තා කරන්න</button>' +
           '<div class="reply-list"></div>';
         const replyList = wrapper.querySelector(".reply-list");
         posts.filter(reply => reply.parent_id === post.id).forEach(function(reply) {
@@ -555,6 +556,50 @@ if (!window.supabase) {
           document.getElementById("communityPostButton").textContent = "Send Reply | පිළිතුර යවන්න";
         });
       });
+      feed.querySelectorAll("[data-report-user]").forEach(function(button) {
+  button.addEventListener("click", async function() {
+    const reason = prompt(
+      "පැමිණිල්ලට හේතුව තෝරන්න:\n1 - අපහාස කිරීම\n2 - ලිංගික හිරිහැර\n3 - තර්ජනය කිරීම\n4 - අයාචිත පණිවිඩ\n5 - වෙනත්"
+    );
+
+    const reasons = {
+      "1": "abuse",
+      "2": "sexual_harassment",
+      "3": "threats",
+      "4": "spam",
+      "5": "other"
+    };
+
+    if (!reason || !reasons[reason]) return;
+
+    const details = prompt("සිදුවීම පිළිබඳ කෙටි විස්තරයක් ලියන්න:");
+
+    if (!details || !details.trim()) return;
+
+    const { data: sessionData } = await client.auth.getSession();
+    const user = sessionData.session?.user;
+
+    if (!user) {
+      alert("පැමිණිල්ලක් යැවීමට Login වන්න.");
+      return;
+    }
+
+    const { error } = await client.from("safety_reports").insert({
+      reporter_id: user.id,
+      reported_user_id: button.dataset.reportUser,
+      content_type: button.dataset.reportType,
+      content_id: button.dataset.reportContent,
+      reason: reasons[reason],
+      details: details.trim()
+    });
+
+    if (error) {
+      alert("පැමිණිල්ල යැවීමට නොහැකි වුණා: " + error.message);
+    } else {
+      alert("ඔබගේ පැමිණිල්ල සාර්ථකව යැවුණා. ස්තුතියි.");
+    }
+  });
+});
     } catch (error) {
       directoryMessage.textContent = "සාමාජිකයන් ලබාගැනීමේ ගැටලුවක්: " + (error.message || "නොදන්නා දෝෂයක්");
       feed.textContent = "කතාබහ ලබාගැනීමට නොහැකි වුණා. SQL සැකසුම් සහ අවසර පරීක්ෂා කරන්න.";

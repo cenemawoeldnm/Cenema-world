@@ -22,7 +22,7 @@ textarea{font:inherit}.watch-item{display:flex;justify-content:space-between;ali
 label{font-size:13px;color:#d8dbe5}.form-actions{display:grid;gap:8px}.notice{font-size:12px;color:#c2c6d2;background:#202431;padding:10px;border-radius:8px;margin-top:10px}
 #authMessage,#loginMessage{font-size:13px;margin-top:12px;white-space:pre-wrap}.success{color:#7ee0a0}.error{color:#ff9292}
 footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px 12px;font-size:11px}
-@media(min-width:650px){.මgrid{grid-template-columns:repeat(3,minmax(0,1fr))}.poster{height:150px}}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.poster{height:150px}}
 </style>
 </head>
 <body>
@@ -292,6 +292,68 @@ if (!window.supabase) {
   showMessage(messageBox, "ලියාපදිංචි සේවාව දැන් ලබාගත නොහැක. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.", "error");
 } else {
   const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+ async function loadCinemaLibrary() {
+  const grid = document.getElementById("featuredMoviesGrid");
+  if (!grid) return;
+
+  const { data: movies, error } = await client
+    .from("cinema_library")
+    .select("*")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Cinema Library Error:", error);
+    return;
+  }
+
+  grid.querySelectorAll("[data-cinema-card]").forEach(card => card.remove());
+
+  (movies || []).forEach(movie => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.dataset.cinemaCard = "true";
+
+    const poster = document.createElement("div");
+    poster.className = "poster";
+
+    if (movie.poster_url && /^https?:\/\//i.test(movie.poster_url)) {
+      const img = document.createElement("img");
+      img.src = movie.poster_url;
+      img.alt = movie.title;
+      img.loading = "lazy";
+      img.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:9px";
+      poster.appendChild(img);
+    } else {
+      poster.textContent = "🎬";
+    }
+
+    const title = document.createElement("h3");
+    title.textContent = movie.title;
+
+    const info = document.createElement("p");
+    info.className = "muted";
+    info.textContent = [
+      movie.language,
+      movie.release_year,
+      movie.genre
+    ].filter(Boolean).join(" · ");
+
+    card.append(poster, title, info);
+
+    if (movie.watch_url && /^https?:\/\//i.test(movie.watch_url)) {
+      const link = document.createElement("a");
+      link.href = movie.watch_url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.className = "primary";
+      link.textContent = "▶ Watch";
+      card.appendChild(link);
+    }
+
+    grid.appendChild(card);
+  });
+}
 async function checkAdminAccess() {
   const { data, error } = await client
     .from("admin_users")

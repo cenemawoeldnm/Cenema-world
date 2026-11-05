@@ -108,6 +108,17 @@ footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px
 <div class="form-actions"><button class="primary" id="loginButton" type="submit">Login</button><button class="outline" id="logoutButton" type="button" style="display:none">Logout</button></div>
 </form><div id="loginMessage" role="status" aria-live="polite"></div>
 </div></section>
+  <!-- CINEමා WORLD ADMIN PANEL -->
+<section id="adminPanel" style="display:none">
+  <h2>🛡️ Admin Control Panel | පරිපාලක පුවරුව</h2>
+
+  <div class="panel">
+    <h3>🚩 Safety Reports | ලැබුණු පැමිණිලි</h3>
+    <div id="adminReports">
+      <p class="muted">පැමිණිලි ලබාගනිමින්...</p>
+    </div>
+  </div>
+</section>
 <section id="memberProfile" style="display:none"><h2>My Profile | මගේ පැතිකඩ</h2><div class="panel">
 <div class="avatar-area">
 <img id="profileAvatar" alt="Profile picture" src="" style="display:none;width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin:4px 0 12px">
@@ -225,7 +236,24 @@ if (!window.supabase) {
   showMessage(messageBox, "ලියාපදිංචි සේවාව දැන් ලබාගත නොහැක. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.", "error");
 } else {
   const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+async function checkAdminAccess() {
+  const { data, error } = await client
+    .from("admin_users")
+    .select("role")
+    .eq("user_id", (await client.auth.getUser()).data.user.id)
+    .maybeSingle();
 
+  const adminPanel = document.getElementById("adminPanel");
+
+  if (error || !data || !["admin", "moderator"].includes(data.role)) {
+    adminPanel.style.display = "none";
+    return false;
+  }
+
+  adminPanel.style.display = "block";
+  await loadAdminReports();
+  return true;
+}
   async function loadProfile(user) {
     const { data, error } = await client.from("members")
       .select("username,display_name,created_at,avatar_url")
@@ -254,13 +282,75 @@ if (!window.supabase) {
       avatarPlaceholder.style.display = "flex";
     }
     document.getElementById("memberProfile").style.display = "block";
+    await checkAdminAccess();
     if (error) console.error("Profile loading issue:", error.message);
   }
 
   function hideProfile() {
     document.getElementById("memberProfile").style.display = "none";
   }
+async function loadAdminReports() {
+  const reportsBox = document.getElementById("adminReports");
+  reportsBox.textContent = "පැමිණිලි ලබාගනිමින්...";
 
+  const { data: reports, error } = await client
+    .from("safety_reports")
+    .select("id,reporter_id,reported_user_id,content_type,content_id,reason,details,status,created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    reportsBox.textContent = "පැමිණිලි ලබාගැනීමට නොහැකි වුණා.";
+    console.error(error);
+    return;
+  }
+
+  if (!reports || reports.length === 0) {
+    reportsBox.textContent = "දැනට පැමිණිලි නැහැ.";
+    return;
+  }
+
+  reportsBox.innerHTML = "";
+
+  reports.forEach(function(report) {
+    const card = document.createElement("div");
+    card.className = "event";
+    card.style.marginBottom = "12px";
+
+    const title = document.createElement("h3");
+    title.textContent = "🚩 " + report.reason;
+
+    const details = document.createElement("p");
+    details.textContent = report.details || "විස්තර නැහැ.";
+
+    const status = document.createElement("p");
+    status.textContent = "තත්ත්වය: " + report.status;
+
+    const date = document.createElement("p");
+    date.textContent = new Date(report.created_at).toLocaleString();
+const resolveButton = document.createElement("button");
+resolveButton.className = "primary";
+resolveButton.textContent = "✅ Mark as Resolved | විසඳා ඇත";
+
+resolveButton.addEventListener("click", async function() {
+  const { error } = await client
+    .from("safety_reports")
+    .update({ status: "resolved" })
+    .eq("id", report.id);
+
+  if (error) {
+    alert("යාවත්කාලීන කිරීමට නොහැකි වුණා.");
+    return;
+  }
+
+  alert("පැමිණිල්ල විසඳා ඇත ලෙස සටහන් කළා.");
+  await loadAdminReports();
+});
+
+card.appendChild(resolveButton);
+    card.append(title, details, status, date);
+    reportsBox.appendChild(card);
+  });
+}
   document.getElementById("editProfileForm").addEventListener("submit", async function(event) {
     event.preventDefault();
     const { data: sessionData } = await client.auth.getSession();
@@ -535,6 +625,7 @@ if (!window.supabase) {
           '<p style="white-space:pre-wrap">' + escapeCommunityText(post.body) + '</p>' +
           '<button class="outline" type="button" data-reply-to="' + escapeCommunityText(post.id) + '">Reply | පිළිතුරු</button>' +
           '<button class="outline" type="button" data-report-user="' + escapeCommunityText(post.author_id) + '" data-report-content="' + escapeCommunityText(post.id) + '" data-report-type="comment">🚩 Report | වාර්තා කරන්න</button>' +
+          '<button class="outline" type="button" data-block-user="' + escapeCommunityText(post.author_id) + '">🚫 Block | අවහිර කරන්න</button>' +
           '<div class="reply-list"></div>';
         const replyList = wrapper.querySelector(".reply-list");
         posts.filter(reply => reply.parent_id === post.id).forEach(function(reply) {
@@ -573,7 +664,6 @@ if (!window.supabase) {
     if (!reason || !reasons[reason]) return;
 
     const details = prompt("සිදුවීම පිළිබඳ කෙටි විස්තරයක් ලියන්න:");
-
     if (!details || !details.trim()) return;
 
     const { data: sessionData } = await client.auth.getSession();
@@ -597,6 +687,33 @@ if (!window.supabase) {
       alert("පැමිණිල්ල යැවීමට නොහැකි වුණා: " + error.message);
     } else {
       alert("ඔබගේ පැමිණිල්ල සාර්ථකව යැවුණා. ස්තුතියි.");
+    }
+  });
+});
+
+feed.querySelectorAll("[data-block-user]").forEach(function(button) {
+  button.addEventListener("click", async function() {
+    const confirmed = confirm("මෙම සාමාජිකයා අවහිර කරන්න අවශ්‍යද?");
+    if (!confirmed) return;
+
+    const { data: sessionData } = await client.auth.getSession();
+    const user = sessionData.session?.user;
+
+    if (!user) {
+      alert("අවහිර කිරීමට Login වන්න.");
+      return;
+    }
+
+    const { error } = await client.from("member_blocks").insert({
+      blocker_id: user.id,
+      blocked_id: button.dataset.blockUser
+    });
+
+    if (error) {
+      alert("අවහිර කිරීමට නොහැකි වුණා: " + error.message);
+    } else {
+      alert("සාමාජිකයා අවහිර කළා.");
+      await loadCommunity();
     }
   });
 });

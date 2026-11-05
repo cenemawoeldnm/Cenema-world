@@ -1,115 +1,136 @@
-<!DOCTYPE html>
-<html lang="si">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CINEමා WORLD | One World. All Movies. One Cinema.</title>
-<style>
-:root{--bg:#090a0e;--panel:#151821;--red:#e53935;--gold:#e8bd63;--muted:#aeb3c2;--white:#f7f7fa}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font-family:Arial,sans-serif;line-height:1.5}
-header{position:sticky;top:0;background:#090a0eee;backdrop-filter:blur(10px);border-bottom:1px solid #292d38;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:5}
-.logo{font-weight:900;font-size:20px;letter-spacing:.3px}.logo span{color:var(--red)}.logo small{display:block;font-size:9px;color:var(--gold);letter-spacing:1.5px}
-button{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:var(--red);color:white}.outline{background:transparent;color:white;border:1px solid #555d70}
-button:disabled{opacity:.55;cursor:wait}
-main{max-width:980px;margin:auto;padding:18px 14px 60px}.hero{padding:28px 20px;border-radius:18px;background:linear-gradient(120deg,#281014,#171923 58%,#29200e);border:1px solid #40313a}
-.tag{color:var(--gold);font-size:12px;font-weight:bold;letter-spacing:1.5px}.hero h1{font-size:clamp(27px,6vw,42px);line-height:1.15;margin:10px 0}.hero p{color:#d4d6df;max-width:600px}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
-h2{font-size:20px;margin:28px 0 12px}.muted{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{background:var(--panel);border:1px solid #292e3b;border-radius:13px;padding:14px;min-width:0}.poster{height:118px;border-radius:9px;background:linear-gradient(145deg,#34202a,#161b28 55%,#6b4a22);display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:10px}.card h3{margin:5px 0;font-size:16px}.pill{display:inline-block;border:1px solid #555d70;color:#d7d9e1;border-radius:20px;padding:3px 8px;font-size:10px;margin:2px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.schedule{display:grid;gap:9px}.event{background:var(--panel);border:1px solid #292e3b;border-radius:11px;padding:12px}.event strong{display:block}.event time{color:var(--gold);font-size:12px}
-.panel{background:var(--panel);border:1px solid #292e3b;border-radius:14px;padding:16px;margin-top:14px}
-input{width:100%;padding:12px;border-radius:8px;border:1px solid #454b5b;background:#0d1017;color:white;margin:6px 0 12px}
-label{font-size:13px;color:#d8dbe5}.form-actions{display:grid;gap:8px}.notice{font-size:12px;color:#c2c6d2;background:#202431;padding:10px;border-radius:8px;margin-top:10px}
-#authMessage{font-size:13px;margin-top:12px;white-space:pre-wrap}.success{color:#7ee0a0}.error{color:#ff9292}
-footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px 12px;font-size:11px}
-@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.poster{height:150px}}
-</style>
-</head>
-<body>
-<header><div class="logo">CINEමා <span>WORLD</span><small>ONE WORLD. ALL MOVIES. ONE CINEMA.</small></div><button class="primary" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Join Free</button></header>
-<main>
-<section class="hero">
-<div class="tag">YOUR GLOBAL MOVIE COMMUNITY</div>
-<h1>එකම තිරයක්.<br>ලොව පුරා සිනමා රසිකයෝ.</h1>
-<p>චිත්‍රපට සහ වැඩසටහන් එකට නරඹන්න, කතාබහ කරන්න, අදහස් සහ ශ්‍රේණිගත කිරීම් බෙදාගන්න.</p>
-<div class="actions"><button class="primary" onclick="document.getElementById('schedule').scrollIntoView({behavior:'smooth'})">View Programs</button><button class="outline" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Create Account</button></div>
-</section>
-<section><h2>Featured Movies</h2><div class="grid">
-<article class="card"><div class="poster">🎬</div><span class="pill">FEATURED</span><h3>සුහද කොකා</h3><p class="muted">Sinhala Comedy · Film listing demo</p></article>
-<article class="card"><div class="poster">🌌</div><span class="pill">PUBLIC-DOMAIN TEST</span><h3>Classic Cinema</h3><p class="muted">A sample slot for rights-cleared films</p></article>
-<article class="card"><div class="poster">🎞️</div><span class="pill">COMING SOON</span><h3>World Cinema</h3><p class="muted">International film collection</p></article>
-</div><p class="muted">සටහන: මෙහි චිත්‍රපට නාම පෙන්වන්නේ සැලසුම් ආදර්ශයක් ලෙස පමණයි. අවසර නැති චිත්‍රපට හෝ පෝස්ටර් ප්‍රචාරය/විකාශය නොකරන්න.</p></section>
-<section id="schedule"><h2>Upcoming Movie Rooms</h2><div class="schedule">
-<div class="event row"><div><strong>Classic Film Night</strong><span class="muted">Rights-cleared title · Community watch</span></div><time>Sat · 7:30 PM</time></div>
-<div class="event row"><div><strong>Sinhala Short Film Hour</strong><span class="muted">Independent creators</span></div><time>Sun · 6:00 PM</time></div>
-<div class="event row"><div><strong>World Cinema Meetup</strong><span class="muted">Film discussion room</span></div><time>Coming soon</time></div>
-</div></section>
-<section><h2>Membership</h2><div class="grid">
-<div class="card"><h3>Guest</h3><p class="muted">නොමිලේ නැරඹීම සහ වැඩසටහන් බැලීම. සීමිත කාලයකට පමණක් chat.</p><span class="pill">WATCH</span><span class="pill">READ CHAT</span></div>
-<div class="card"><h3>Free Member</h3><p class="muted">Chat, comments, replies, favourites සහ ratings/reviews.</p><span class="pill">CHAT</span><span class="pill">REVIEWS</span><span class="pill">FAVOURITES</span></div>
-<div class="card"><h3>Premium</h3><p class="muted">අනාගත සැලසුමක් පමණි. මිල සහ වරප්‍රසාද පසුව තීරණය කරමු.</p><span class="pill">PLANNED</span></div>
-</div></section>
-<section id="join"><h2>Create Your Free Account</h2><div class="panel">
-<p class="muted">Username, Email සහ Password භාවිතයෙන් නොමිලේ ගිණුමක් සාදන්න. Email එක තහවුරු කිරීම සහ ගිණුම නැවත ලබාගැනීම සඳහා පමණයි.</p>
-<form id="signupForm">
-<label for="username">Username (පරිශීලක නාමය)</label><input id="username" autocomplete="username" minlength="3" maxlength="24" required placeholder="ඉංග්‍රීසි අකුරු, ඉලක්කම් හෝ _">
-<label for="email">Email address (විද්‍යුත් තැපැල් ලිපිනය)</label><input id="email" type="email" autocomplete="email" required placeholder="ඔබගේ email ලිපිනය">
-<label for="password">Password (මුරපදය)</label><input id="password" type="password" autocomplete="new-password" minlength="8" required placeholder="අවම අකුරු 8ක්">
-<label for="confirm">Confirm password (මුරපදය නැවත)</label><input id="confirm" type="password" autocomplete="new-password" minlength="8" required placeholder="මුරපදය නැවත ඇතුළත් කරන්න">
-<div class="form-actions"><button class="primary" id="signupButton" type="submit">Create Free Account</button></div>
-</form>
-<div id="authMessage" role="status" aria-live="polite"></div>
-<div class="notice">CINEමා WORLD කිසිවිටෙක ඔබගේ email ගිණුමේ මුරපදය ඉල්ලන්නේ නැහැ. මෙහි ඇතුළත් කරන්නේ CINEමා WORLD සඳහා වෙනම මුරපදයකි. Email එකට ලැබෙන්නේ තහවුරු කිරීමේ සබැඳියක් පමණයි.</div>
-</div></section>
-</main>
-<footer>CINEමා WORLD · Registration connection test<br>Only stream films and artwork with the required distribution rights.</footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-/* Replace these two placeholders with your Supabase Project URL and PUBLIC publishable key.
-   Never put an sb_secret_... or service_role key in this public website. */
-const SUPABASE_URL = "https://lciqhclwyhbbsubdmzay.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TAuAtlNWBf5OZUG2TJe7XQ_j8CmJ0fo";
-const messageBox = document.getElementById("authMessage");
-const signupButton = document.getElementById("signupButton");
-function showMessage(message, type){messageBox.textContent=message;messageBox.className=type||"";}
-
-if(!window.supabase){
-  showMessage("ලියාපදිංචි සේවාව දැන් ලබාගත නොහැක. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.","error");
-}else if(SUPABASE_URL.startsWith("PASTE_")||SUPABASE_PUBLISHABLE_KEY.startsWith("PASTE_")){
-  showMessage("Supabase යතුරු තවම ඇතුළත් කර නැහැ. සැකසුම අවශ්‍යයි.","error");
-}else{
-  const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-  document.getElementById("signupForm").addEventListener("submit",async function(event){
-    event.preventDefault();
-    const username=document.getElementById("username").value.trim();
-    const email=document.getElementById("email").value.trim();
-    const password=document.getElementById("password").value;
-    const confirm=document.getElementById("confirm").value;
-    if(!/^[a-zA-Z0-9_]{3,24}$/.test(username)){showMessage("Username එකට ඉංග්‍රීසි අකුරු, ඉලක්කම් සහ _ පමණක් භාවිතා කරන්න (අකුරු 3–24).","error");return;}
-    if(password!==confirm){showMessage("මුරපද දෙක ගැළපෙන්නේ නැහැ.","error");return;}
-    if(password.length<8){showMessage("මුරපදය අවම වශයෙන් අකුරු 8ක් විය යුතුයි.","error");return;}
-    signupButton.disabled=true;signupButton.textContent="Creating account...";
-    showMessage("ගිණුම නිර්මාණය කරමින් පවතී...","");
-    try{
-      const {data,error}=await client.auth.signUp({
-        email:email,password:password,
-        options:{data:{username:username},emailRedirectTo:window.location.origin+window.location.pathname}
-      });
-      if(error)throw error;
-      if(data.user&&!data.session){
-        showMessage("ලියාපදිංචිය ආරම්භ වුණා. ඔබගේ Email inbox එක පරීක්ෂා කර Supabase වෙතින් ලැබුණු තහවුරු කිරීමේ සබැඳිය ඔබන්න.","success");
-      }else if(data.user){
-        showMessage("ගිණුම සාර්ථකව නිර්මාණය වුණා!","success");
-      }else{
-        showMessage("ලියාපදිංචිය තහවුරු කළ නොහැක. නැවත උත්සාහ කරන්න.","error");
-      }
-      document.getElementById("signupForm").reset();
-    }catch(error){
-      showMessage("ලියාපදිංචිය සාර්ථක වුණේ නැහැ: "+(error.message||"නොදන්නා දෝෂයක්"),"error");
-    }finally{
-      signupButton.disabled=false;signupButton.textContent="Create Free Account";
-    }
-  });
-}
-</script>
-</body>
+<!DOCTYPE html>  <html lang="si">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>CINEමා WORLD | One World. All Movies. One Cinema.</title>  
+<style>  
+:root{--bg:#090a0e;--panel:#151821;--red:#e53935;--gold:#e8bd63;--muted:#aeb3c2;--white:#f7f7fa}  
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font-family:Arial,sans-serif;line-height:1.5}  
+header{position:sticky;top:0;background:#090a0eee;backdrop-filter:blur(10px);border-bottom:1px solid #292d38;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:5}  
+.logo{font-weight:900;font-size:20px;letter-spacing:.3px}.logo span{color:var(--red)}.logo small{display:block;font-size:9px;color:var(--gold);letter-spacing:1.5px}  
+button{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:var(--red);color:white}.outline{background:transparent;color:white;border:1px solid #555d70}  
+button:disabled{opacity:.55;cursor:wait}  
+main{max-width:980px;margin:auto;padding:18px 14px 60px}.hero{padding:28px 20px;border-radius:18px;background:linear-gradient(120deg,#281014,#171923 58%,#29200e);border:1px solid #40313a}  
+.tag{color:var(--gold);font-size:12px;font-weight:bold;letter-spacing:1.5px}.hero h1{font-size:clamp(27px,6vw,42px);line-height:1.15;margin:10px 0}.hero p{color:#d4d6df;max-width:600px}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}  
+h2{font-size:20px;margin:28px 0 12px}.muted{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}  
+.card{background:var(--panel);border:1px solid #292e3b;border-radius:13px;padding:14px;min-width:0}.poster{height:118px;border-radius:9px;background:linear-gradient(145deg,#34202a,#161b28 55%,#6b4a22);display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:10px}.card h3{margin:5px 0;font-size:16px}.pill{display:inline-block;border:1px solid #555d70;color:#d7d9e1;border-radius:20px;padding:3px 8px;font-size:10px;margin:2px}  
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.schedule{display:grid;gap:9px}.event{background:var(--panel);border:1px solid #292e3b;border-radius:11px;padding:12px}.event strong{display:block}.event time{color:var(--gold);font-size:12px}  
+.panel{background:var(--panel);border:1px solid #292e3b;border-radius:14px;padding:16px;margin-top:14px}  
+input{width:100%;padding:12px;border-radius:8px;border:1px solid #454b5b;background:#0d1017;color:white;margin:6px 0 12px}  
+label{font-size:13px;color:#d8dbe5}.form-actions{display:grid;gap:8px}.notice{font-size:12px;color:#c2c6d2;background:#202431;padding:10px;border-radius:8px;margin-top:10px}  
+#authMessage,#loginMessage{font-size:13px;margin-top:12px;white-space:pre-wrap}.success{color:#7ee0a0}.error{color:#ff9292}  
+footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px 12px;font-size:11px}  
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.poster{height:150px}}  
+</style>  
+</head>  
+<body>  
+<header><div class="logo">CINEමා <span>WORLD</span><small>ONE WORLD. ALL MOVIES. ONE CINEMA.</small></div><button class="primary" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Join / Login</button></header>  
+<main>  
+<section class="hero">  
+<div class="tag">YOUR GLOBAL MOVIE COMMUNITY</div>  
+<h1>එකම තිරයක්.<br>ලොව පුරා සිනමා රසිකයෝ.</h1>  
+<p>චිත්‍රපට සහ වැඩසටහන් එකට නරඹන්න, කතාබහ කරන්න, අදහස් සහ ශ්‍රේණිගත කිරීම් බෙදාගන්න.</p>  
+<div class="actions"><button class="primary" onclick="document.getElementById('schedule').scrollIntoView({behavior:'smooth'})">View Programs</button><button class="outline" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Create Account / Login</button></div>  
+</section>  
+<section><h2>Featured Movies</h2><div class="grid">  
+<article class="card"><div class="poster">🎬</div><span class="pill">FEATURED</span><h3>සුහද කොකා</h3><p class="muted">Sinhala Comedy · Film listing demo</p></article>  
+<article class="card"><div class="poster">🌌</div><span class="pill">PUBLIC-DOMAIN TEST</span><h3>Classic Cinema</h3><p class="muted">A sample slot for rights-cleared films</p></article>  
+<article class="card"><div class="poster">🎞️</div><span class="pill">COMING SOON</span><h3>World Cinema</h3><p class="muted">International film collection</p></article>  
+</div><p class="muted">සටහන: මෙහි චිත්‍රපට නාම පෙන්වන්නේ සැලසුම් ආදර්ශයක් ලෙස පමණයි. අවසර නැති චිත්‍රපට හෝ පෝස්ටර් ප්‍රචාරය/විකාශය නොකරන්න.</p></section>  
+<section id="schedule"><h2>Upcoming Movie Rooms</h2><div class="schedule">  
+<div class="event row"><div><strong>Classic Film Night</strong><span class="muted">Rights-cleared title · Community watch</span></div><time>Sat · 7:30 PM</time></div>  
+<div class="event row"><div><strong>Sinhala Short Film Hour</strong><span class="muted">Independent creators</span></div><time>Sun · 6:00 PM</time></div>  
+<div class="event row"><div><strong>World Cinema Meetup</strong><span class="muted">Film discussion room</span></div><time>Coming soon</time></div>  
+</div></section>  
+<section><h2>Membership</h2><div class="grid">  
+<div class="card"><h3>Guest</h3><p class="muted">නොමිලේ නැරඹීම සහ වැඩසටහන් බැලීම. සීමිත කාලයකට පමණක් chat.</p><span class="pill">WATCH</span><span class="pill">READ CHAT</span></div>  
+<div class="card"><h3>Free Member</h3><p class="muted">Chat, comments, replies, favourites සහ ratings/reviews.</p><span class="pill">CHAT</span><span class="pill">REVIEWS</span><span class="pill">FAVOURITES</span></div>  
+<div class="card"><h3>Premium</h3><p class="muted">අනාගත සැලසුමක් පමණි. මිල සහ වරප්‍රසාද පසුව තීරණය කරමු.</p><span class="pill">PLANNED</span></div>  
+</div></section>  
+<section id="join"><h2>Create Your Free Account</h2><div class="panel">  
+<p class="muted">අලුත් සාමාජිකයෙකු නම් Username, Email සහ Password භාවිතයෙන් ගිණුමක් සාදන්න.</p>  
+<form id="signupForm">  
+<label for="username">Username (පරිශීලක නාමය)</label><input id="username" autocomplete="username" minlength="3" maxlength="24" required placeholder="ඉංග්‍රීසි අකුරු, ඉලක්කම් හෝ _">  
+<label for="email">Email address (විද්‍යුත් තැපැල් ලිපිනය)</label><input id="email" type="email" autocomplete="email" required placeholder="ඔබගේ email ලිපිනය">  
+<label for="password">Password (මුරපදය)</label><input id="password" type="password" autocomplete="new-password" minlength="8" required placeholder="අවම අකුරු 8ක්">  
+<label for="confirm">Confirm password (මුරපදය නැවත)</label><input id="confirm" type="password" autocomplete="new-password" minlength="8" required placeholder="මුරපදය නැවත ඇතුළත් කරන්න">  
+<div class="form-actions"><button class="primary" id="signupButton" type="submit">Create Free Account</button></div>  
+</form>  
+<div id="authMessage" role="status" aria-live="polite"></div>  
+<div class="notice">CINEමා WORLD සඳහා වෙනම මුරපදයක් භාවිතා කරන්න. ඔබගේ Email ගිණුමේ මුරපදය මෙහි ඇතුළත් කරන්න එපා.</div>  
+</div>  
+<h2>Member Login (සාමාජික පිවිසුම)</h2>  
+<div class="panel">  
+<p class="muted">දැනටමත් ගිණුමක් තිබේ නම් Email සහ CINEමා WORLD මුරපදය ඇතුළත් කරන්න.</p>  
+<form id="loginForm">  
+<label for="loginEmail">Email address</label><input id="loginEmail" type="email" autocomplete="email" required placeholder="ඔබගේ email ලිපිනය">  
+<label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="CINEමා WORLD මුරපදය">  
+<div class="form-actions"><button class="primary" id="loginButton" type="submit">Login</button><button class="outline" id="logoutButton" type="button" style="display:none">Logout</button></div>  
+</form>  
+<div id="loginMessage" role="status" aria-live="polite"></div>  
+</div>  
+</section>  
+</main>  
+<footer>CINEමා WORLD · Account registration and login test<br>Only stream films and artwork with the required distribution rights.</footer>  
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  
+<script>  
+const SUPABASE_URL = "https://lciqhclwyhbbsubdmzay.supabase.co";  
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TAuAtlNWBf5OZUG2TJe7XQ_j8CmJ0fo";  
+const messageBox=document.getElementById("authMessage");  
+const loginMessage=document.getElementById("loginMessage");  
+const signupButton=document.getElementById("signupButton");  
+const loginButton=document.getElementById("loginButton");  
+const logoutButton=document.getElementById("logoutButton");  
+function showMessage(box,message,type){box.textContent=message;box.className=type||"";}  
+if(!window.supabase){  
+ showMessage(messageBox,"ලියාපදිංචි සේවාව දැන් ලබාගත නොහැක. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.","error");  
+}else{  
+ const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);  
+ document.getElementById("signupForm").addEventListener("submit",async function(event){  
+  event.preventDefault();  
+  const username=document.getElementById("username").value.trim();  
+  const email=document.getElementById("email").value.trim();  
+  const password=document.getElementById("password").value;  
+  const confirm=document.getElementById("confirm").value;  
+  if(!/^[a-zA-Z0-9_]{3,24}$/.test(username)){showMessage(messageBox,"Username එකට ඉංග්‍රීසි අකුරු, ඉලක්කම් සහ _ පමණක් භාවිතා කරන්න (අකුරු 3–24).","error");return;}  
+  if(password!==confirm){showMessage(messageBox,"මුරපද දෙක ගැළපෙන්නේ නැහැ.","error");return;}  
+  if(password.length<8){showMessage(messageBox,"මුරපදය අවම වශයෙන් අකුරු 8ක් විය යුතුයි.","error");return;}  
+  signupButton.disabled=true;signupButton.textContent="Creating account...";  
+  showMessage(messageBox,"ගිණුම නිර්මාණය කරමින් පවතී...","");  
+  try{  
+   const {data,error}=await client.auth.signUp({email,password,options:{data:{username},emailRedirectTo:window.location.origin+window.location.pathname}});  
+   if(error)throw error;  
+   if(data.user&&!data.session)showMessage(messageBox,"ලියාපදිංචිය ආරම්භ වුණා. Email inbox එක පරීක්ෂා කර තහවුරු කිරීමේ සබැඳිය ඔබන්න.","success");  
+   else if(data.user)showMessage(messageBox,"ගිණුම සාර්ථකව නිර්මාණය වුණා!","success");  
+   else showMessage(messageBox,"ලියාපදිංචිය තහවුරු කළ නොහැක. නැවත උත්සාහ කරන්න.","error");  
+   document.getElementById("signupForm").reset();  
+  }catch(error){showMessage(messageBox,"ලියාපදිංචිය සාර්ථක වුණේ නැහැ: "+(error.message||"නොදන්නා දෝෂයක්"),"error");}  
+  finally{signupButton.disabled=false;signupButton.textContent="Create Free Account";}  
+ });  
+ document.getElementById("loginForm").addEventListener("submit",async function(event){  
+  event.preventDefault();  
+  const email=document.getElementById("loginEmail").value.trim();  
+  const password=document.getElementById("loginPassword").value;  
+  loginButton.disabled=true;loginButton.textContent="Logging in...";  
+  showMessage(loginMessage,"ගිණුමට ඇතුළු වෙමින් පවතී...","");  
+  try{  
+   const {data,error}=await client.auth.signInWithPassword({email,password});  
+   if(error)throw error;  
+   showMessage(loginMessage,"සාර්ථකයි! ඔබ CINEමා WORLD ගිණුමට ඇතුළු වී සිටිනවා.","success");  
+   document.getElementById("loginForm").reset();  
+   logoutButton.style.display="block";  
+  }catch(error){showMessage(loginMessage,"ඇතුළු වීමට නොහැකි වුණා: "+(error.message||"නොදන්නා දෝෂයක්"),"error");}  
+  finally{loginButton.disabled=false;loginButton.textContent="Login";}  
+ });  
+ logoutButton.addEventListener("click",async function(){  
+  const {error}=await client.auth.signOut();  
+  if(error)showMessage(loginMessage,"Logout කිරීමේ දෝෂයක්: "+error.message,"error");  
+  else{showMessage(loginMessage,"ඔබ සාර්ථකව Logout වුණා.","success");logoutButton.style.display="none";}  
+ });  
+ client.auth.getSession().then(({data})=>{  
+  if(data.session){showMessage(loginMessage,"ඔබ දැනටමත් CINEමා WORLD ගිණුමට ඇතුළු වී සිටිනවා.","success");logoutButton.style.display="block";}  
+ });  
+}  
+</script>  
+</body>  
 </html>

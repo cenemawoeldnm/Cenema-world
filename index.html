@@ -763,5 +763,78 @@ if (!window.supabase) {
   });
 })();
 </script>
+<script>
+(function () {
+  const descriptions = {
+    "සුහද කොකා": "සිංහල විනෝදාත්මක චිත්‍රපට ලැයිස්තුවේ ඇතුළත් චිත්‍රපටයකි. වැඩි විස්තර ඉදිරියේදී යාවත්කාලීන කරනු ලැබේ.",
+    "Classic Cinema": "අයිතිවාසිකම් තහවුරු කළ සම්භාව්‍ය චිත්‍රපට සඳහා වෙන් කළ ස්ථානයකි.",
+    "World Cinema": "ජාත්‍යන්තර චිත්‍රපට එකතුව. වැඩි විස්තර ඉදිරියේදී."
+  };
+
+  const overlay = document.createElement("div");
+
+  overlay.style.cssText = `
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    z-index:99999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  `;
+
+  const box = document.createElement("div");
+
+  box.style.cssText = `
+    background:#18202d;
+    color:white;
+    padding:25px;
+    border-radius:15px;
+    max-width:420px;
+    width:100%;
+    text-align:center;
+  `;
+
+  const title = document.createElement("h2");
+  const description = document.createElement("p");
+  const close = document.createElement("button");
+
+  close.textContent = "වසන්න ✖";
+  close.style.cssText = `
+    padding:10px 22px;
+    border:0;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:15px;
+  `;
+
+  box.append(title, description, close);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  function closePopup() {
+    overlay.style.display = "none";
+  }
+
+  document.querySelectorAll(".details-btn").forEach(function (button) {
+    button.addEventListener("click", function () {
+      const movie = button.dataset.title;
+
+      title.textContent = movie;
+      description.textContent =
+        descriptions[movie] || "චිත්‍රපට විස්තර ඉදිරියේදී එකතු කරනු ලැබේ.";
+
+      overlay.style.display = "flex";
+    });
+  });
+
+  close.addEventListener("click", closePopup);
+
+  overlay.addEventListener("click", function (event) {
+    if (event.target === overlay) closePopup();
+  });
+})();
+</script>
 </body>
 </html>

@@ -87,6 +87,28 @@ footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px
 <hr>
 <p>❤️ My Favourites — ඉදිරියේදී</p><p>⭐ My Reviews — ඉදිරියේදී</p>
 </div></section>
+
+<section id="community" style="display:none">
+  <h2>🌍 Member Community | සාමාජික ප්‍රජාව</h2>
+  <div class="panel">
+    <h3>සාමාජිකයන්</h3>
+    <p class="muted">CINEමා WORLD හි සාමාජික පැතිකඩ. Email ලිපින මෙහි පෙන්වන්නේ නැහැ.</p>
+    <div id="memberDirectory" class="grid"></div>
+    <div id="directoryMessage" class="muted" role="status"></div>
+  </div>
+  <div class="panel">
+    <h3>🎬 Movie Discussion | චිත්‍රපට කතාබහ</h3>
+    <form id="communityPostForm">
+      <label for="communityPostText">ඔබගේ අදහස ලියන්න</label>
+      <textarea id="communityPostText" maxlength="1000" required placeholder="චිත්‍රපටයක් ගැන ඔබගේ අදහස..." style="width:100%;min-height:90px;padding:12px;border-radius:8px;border:1px solid #454b5b;background:#0d1017;color:white;margin:6px 0 12px"></textarea>
+      <button class="primary" id="communityPostButton" type="submit">Post Comment | අදහස පළ කරන්න</button>
+    </form>
+    <div id="communityMessage" role="status" aria-live="polite"></div>
+    <hr>
+    <div id="communityFeed"></div>
+  </div>
+</section>
+
 </main>
 <footer>CINEමා WORLD · Account registration and login test<br>Only stream films and artwork with the required distribution rights.</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -243,6 +265,153 @@ if (!window.supabase) {
     }
   });
 
+
+  function escapeCommunityText(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function(char) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char];
+    });
+  }
+
+  async function loadCommunity() {
+    const community = document.getElementById("community");
+    community.style.display = "block";
+    const directory = document.getElementById("memberDirectory");
+    const directoryMessage = document.getElementById("directoryMessage");
+    const feed = document.getElementById("communityFeed");
+
+    directory.innerHTML = "";
+    feed.innerHTML = "";
+    directoryMessage.textContent = "සාමාජිකයන් ලබාගනිමින්...";
+    feed.textContent = "අදහස් ලබාගනිමින්...";
+
+    try {
+      const { data: members, error: membersError } = await client
+        .from("members")
+        .select("auth_user_id,username,display_name,avatar_url,created_at")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (membersError) throw membersError;
+
+      if (!members || members.length === 0) {
+        directoryMessage.textContent = "තවම සාමාජිකයන් නැහැ.";
+      } else {
+        directoryMessage.textContent = "";
+        members.forEach(function(member) {
+          const card = document.createElement("article");
+          card.className = "card";
+          const avatarMarkup = member.avatar_url
+            ? '<img src="' + escapeCommunityText(member.avatar_url) + '" alt="" style="width:58px;height:58px;border-radius:50%;object-fit:cover">'
+            : '<div style="width:58px;height:58px;border-radius:50%;background:#292e3b;display:flex;align-items:center;justify-content:center;font-size:25px">👤</div>';
+          card.innerHTML = avatarMarkup +
+            '<h3>' + escapeCommunityText(member.display_name || member.username || "Member") + '</h3>' +
+            '<p class="muted">@' + escapeCommunityText(member.username || "") + '</p>';
+          directory.appendChild(card);
+        });
+      }
+
+      const { data: posts, error: postsError } = await client
+        .from("community_posts")
+        .select("id,author_id,body,parent_id,created_at")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (postsError) throw postsError;
+
+      const authorIds = [...new Set((posts || []).map(post => post.author_id))];
+      let authorMap = {};
+      if (authorIds.length) {
+        const { data: authors, error: authorsError } = await client
+          .from("members")
+          .select("auth_user_id,username,display_name,avatar_url")
+          .in("auth_user_id", authorIds);
+        if (authorsError) throw authorsError;
+        (authors || []).forEach(author => { authorMap[author.auth_user_id] = author; });
+      }
+
+      if (!posts || posts.length === 0) {
+        feed.innerHTML = '<p class="muted">තවම අදහස් නැහැ. පළමු අදහස ඔබ ලියන්න!</p>';
+        return;
+      }
+
+      const postById = {};
+      posts.forEach(post => { postById[post.id] = post; });
+      const roots = posts.filter(post => !post.parent_id);
+      roots.forEach(function(post) {
+        const author = authorMap[post.author_id] || {};
+        const display = author.display_name || author.username || "Member";
+        const wrapper = document.createElement("div");
+        wrapper.className = "event";
+        wrapper.style.marginBottom = "12px";
+        const date = new Date(post.created_at).toLocaleString();
+        wrapper.innerHTML =
+          '<div class="row"><strong>' + escapeCommunityText(display) + '</strong><span class="muted">' + escapeCommunityText(date) + '</span></div>' +
+          '<p style="white-space:pre-wrap">' + escapeCommunityText(post.body) + '</p>' +
+          '<button class="outline" type="button" data-reply-to="' + escapeCommunityText(post.id) + '">Reply | පිළිතුරු</button>' +
+          '<div class="reply-list"></div>';
+        const replyList = wrapper.querySelector(".reply-list");
+        posts.filter(reply => reply.parent_id === post.id).forEach(function(reply) {
+          const replyAuthor = authorMap[reply.author_id] || {};
+          const replyName = replyAuthor.display_name || replyAuthor.username || "Member";
+          const replyBox = document.createElement("div");
+          replyBox.style.cssText = "margin:10px 0 0 14px;padding:9px;border-left:2px solid var(--gold);background:#10131b;border-radius:6px";
+          replyBox.innerHTML = '<strong>' + escapeCommunityText(replyName) + '</strong><p style="white-space:pre-wrap;margin:4px 0">' + escapeCommunityText(reply.body) + '</p><span class="muted">' + escapeCommunityText(new Date(reply.created_at).toLocaleString()) + '</span>';
+          replyList.appendChild(replyBox);
+        });
+        feed.appendChild(wrapper);
+      });
+
+      feed.querySelectorAll("[data-reply-to]").forEach(function(button) {
+        button.addEventListener("click", function() {
+          document.getElementById("communityPostText").focus();
+          document.getElementById("communityPostText").dataset.parentId = button.dataset.replyTo;
+          document.getElementById("communityPostText").placeholder = "මෙම අදහසට පිළිතුරක් ලියන්න...";
+          document.getElementById("communityPostButton").textContent = "Send Reply | පිළිතුර යවන්න";
+        });
+      });
+    } catch (error) {
+      directoryMessage.textContent = "සාමාජිකයන් ලබාගැනීමේ ගැටලුවක්: " + (error.message || "නොදන්නා දෝෂයක්");
+      feed.textContent = "කතාබහ ලබාගැනීමට නොහැකි වුණා. SQL සැකසුම් සහ අවසර පරීක්ෂා කරන්න.";
+      console.error("Community loading issue:", error);
+    }
+  }
+
+  document.getElementById("communityPostForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const textBox = document.getElementById("communityPostText");
+    const button = document.getElementById("communityPostButton");
+    const message = document.getElementById("communityMessage");
+    const body = textBox.value.trim();
+    if (!body) return;
+
+    const { data: sessionData } = await client.auth.getSession();
+    const user = sessionData.session?.user;
+    if (!user) {
+      showMessage(message, "අදහසක් පළ කිරීමට Login වන්න.", "error");
+      return;
+    }
+
+    button.disabled = true;
+    try {
+      const parentId = textBox.dataset.parentId || null;
+      const { error } = await client.from("community_posts").insert({
+        author_id: user.id,
+        body: body,
+        parent_id: parentId
+      });
+      if (error) throw error;
+
+      textBox.value = "";
+      delete textBox.dataset.parentId;
+      textBox.placeholder = "චිත්‍රපටයක් ගැන ඔබගේ අදහස...";
+      button.textContent = "Post Comment | අදහස පළ කරන්න";
+      showMessage(message, "ඔබගේ අදහස සාර්ථකව පළ වුණා!", "success");
+      await loadCommunity();
+    } catch (error) {
+      showMessage(message, "අදහස පළ කිරීමට නොහැකි වුණා: " + (error.message || "නොදන්නා දෝෂයක්"), "error");
+    } finally {
+      button.disabled = false;
+    }
+  });
+
   document.getElementById("signupForm").addEventListener("submit", async function(event) {
     event.preventDefault();
     const username = document.getElementById("username").value.trim();
@@ -281,6 +450,7 @@ if (!window.supabase) {
       const { data, error } = await client.auth.signInWithPassword({ email, password });
       if (error) throw error;
       await loadProfile(data.user);
+      await loadCommunity();
       showMessage(loginMessage, "සාර්ථකයි! ඔබ CINEමා WORLD ගිණුමට ඇතුළු වී සිටිනවා.", "success");
       document.getElementById("loginForm").reset();
       logoutButton.style.display = "block";
@@ -294,6 +464,7 @@ if (!window.supabase) {
     if (error) showMessage(loginMessage, "Logout කිරීමේ දෝෂයක්: " + error.message, "error");
     else {
       hideProfile();
+      document.getElementById("community").style.display = "none";
       showMessage(loginMessage, "ඔබ සාර්ථකව Logout වුණා.", "success");
       logoutButton.style.display = "none";
     }
@@ -303,6 +474,7 @@ if (!window.supabase) {
     if (error) { showMessage(loginMessage, "ගිණුම් තත්ත්වය ලබාගැනීමට නොහැකි වුණා.", "error"); return; }
     if (data.session) {
       await loadProfile(data.session.user);
+      await loadCommunity();
       showMessage(loginMessage, "ඔබ දැනටමත් CINEමා WORLD ගිණුමට ඇතුළු වී සිටිනවා.", "success");
       logoutButton.style.display = "block";
     } else hideProfile();

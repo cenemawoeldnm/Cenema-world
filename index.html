@@ -594,6 +594,25 @@ card.appendChild(resolveButton);
         .order("created_at", { ascending: false })
         .limit(100);
       if (postsError) throw postsError;
+      const { data: sessionData } = await client.auth.getSession();
+const currentUser = sessionData.session?.user;
+
+if (currentUser) {
+  const { data: blockedMembers, error: blockError } = await client
+    .from("member_blocks")
+    .select("blocked_id")
+    .eq("blocker_id", currentUser.id);
+
+  if (blockError) throw blockError;
+
+  const blockedIds = (blockedMembers || []).map(item => item.blocked_id);
+
+  const visiblePosts = (posts || []).filter(post =>
+    !blockedIds.includes(post.author_id)
+  );
+
+if (posts) posts.splice(0, posts.length, ...visiblePosts);
+}
 
       const authorIds = [...new Set((posts || []).map(post => post.author_id))];
       let authorMap = {};
@@ -621,13 +640,15 @@ card.appendChild(resolveButton);
         wrapper.className = "event";
         wrapper.style.marginBottom = "12px";
         const date = new Date(post.created_at).toLocaleString();
-        wrapper.innerHTML =
-          '<div class="row"><strong>' + escapeCommunityText(display) + '</strong><span class="muted">' + escapeCommunityText(date) + '</span></div>' +
-          '<p style="white-space:pre-wrap">' + escapeCommunityText(post.body) + '</p>' +
-          '<button class="outline" type="button" data-reply-to="' + escapeCommunityText(post.id) + '">Reply | පිළිතුරු</button>' +
-          '<button class="outline" type="button" data-report-user="' + escapeCommunityText(post.author_id) + '" data-report-content="' + escapeCommunityText(post.id) + '" data-report-type="comment">🚩 Report | වාර්තා කරන්න</button>' +
-          '<button class="outline" type="button" data-block-user="' + escapeCommunityText(post.author_id) + '">🚫 Block | අවහිර කරන්න</button>' +
-          '<div class="reply-list"></div>';
+      wrapper.innerHTML =
+  '<div class="row"><strong>' + escapeCommunityText(display) + '</strong><span class="muted">' + escapeCommunityText(date) + '</span></div>' +
+  '<p style="white-space:pre-wrap">' + escapeCommunityText(post.body) + '</p>' +
+  '<button class="outline" type="button" data-reply-to="' + escapeCommunityText(post.id) + '">Reply | පිළිතුරු</button>' +
+  (currentUser && post.author_id !== currentUser.id
+    ? '<button class="outline" type="button" data-report-user="' + escapeCommunityText(post.author_id) + '" data-report-content="' + escapeCommunityText(post.id) + '" data-report-type="comment">🚩 Report | වාර්තා කරන්න</button>' +
+      '<button class="outline" type="button" data-block-user="' + escapeCommunityText(post.author_id) + '">🚫 Block | අවහිර කරන්න</button>'
+    : '') +
+  '<div class="reply-list"></div>';
         const replyList = wrapper.querySelector(".reply-list");
         posts.filter(reply => reply.parent_id === post.id).forEach(function(reply) {
           const replyAuthor = authorMap[reply.author_id] || {};
@@ -635,6 +656,17 @@ card.appendChild(resolveButton);
           const replyBox = document.createElement("div");
           replyBox.style.cssText = "margin:10px 0 0 14px;padding:9px;border-left:2px solid var(--gold);background:#10131b;border-radius:6px";
           replyBox.innerHTML = '<strong>' + escapeCommunityText(replyName) + '</strong><p style="white-space:pre-wrap;margin:4px 0">' + escapeCommunityText(reply.body) + '</p><span class="muted">' + escapeCommunityText(new Date(reply.created_at).toLocaleString()) + '</span>';
+          if (currentUser && reply.author_id !== currentUser.id) {
+  const reportReplyButton = document.createElement("button");
+  reportReplyButton.className = "outline";
+  reportReplyButton.type = "button";
+  reportReplyButton.textContent = "🚩 Report Reply | පිළිතුර වාර්තා කරන්න";
+  reportReplyButton.dataset.reportUser = reply.author_id;
+  reportReplyButton.dataset.reportContent = reply.id;
+  reportReplyButton.dataset.reportType = "reply";
+
+  replyBox.appendChild(reportReplyButton);
+}
           replyList.appendChild(replyBox);
         });
         feed.appendChild(wrapper);

@@ -109,6 +109,35 @@ footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px
   </div>
 </section>
 
+
+<section id="movieReviews" style="display:none">
+  <h2>⭐ Movie Ratings & Reviews | චිත්‍රපට ඇගයීම්</h2>
+  <div class="panel">
+    <h3>ඔබේ චිත්‍රපට Review එක පළ කරන්න</h3>
+    <form id="movieReviewForm">
+      <label for="reviewMovieTitle">චිත්‍රපටයේ නම</label>
+      <input id="reviewMovieTitle" type="text" maxlength="120" required placeholder="Movie title">
+      <label for="reviewRating">Rating (තරු 1–5)</label>
+      <select id="reviewRating" required>
+        <option value="">තරු ගණන තෝරන්න</option>
+        <option value="5">★★★★★ — 5</option>
+        <option value="4">★★★★☆ — 4</option>
+        <option value="3">★★★☆☆ — 3</option>
+        <option value="2">★★☆☆☆ — 2</option>
+        <option value="1">★☆☆☆☆ — 1</option>
+      </select>
+      <label for="reviewBody">ඔබේ අදහස</label>
+      <textarea id="reviewBody" maxlength="2000" required placeholder="චිත්‍රපටය ගැන ඔබේ අදහස ලියන්න..." style="width:100%;min-height:110px;padding:12px;border-radius:8px;border:1px solid #454b5b;background:#0d1017;color:white;margin:6px 0 12px"></textarea>
+      <button class="primary" id="submitMovieReview" type="submit">Publish Review | Review එක පළ කරන්න</button>
+    </form>
+    <div id="movieReviewMessage" role="status" aria-live="polite"></div>
+  </div>
+  <div class="panel">
+    <h3>🎬 Community Reviews | සාමාජිකයන්ගේ Review</h3>
+    <div id="movieReviewFeed">Reviews ලබාගනිමින්...</div>
+  </div>
+</section>
+
 </main>
 <footer>CINEමා WORLD · Account registration and login test<br>Only stream films and artwork with the required distribution rights.</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -265,6 +294,95 @@ if (!window.supabase) {
     }
   });
 
+
+
+  async function loadMovieReviews() {
+    const section = document.getElementById("movieReviews");
+    section.style.display = "block";
+    const feed = document.getElementById("movieReviewFeed");
+    feed.textContent = "Reviews ලබාගනිමින්...";
+    try {
+      const { data: reviews, error } = await client
+        .from("movie_reviews")
+        .select("id,author_id,movie_title,rating,body,created_at")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (error) throw error;
+
+      if (!reviews || reviews.length === 0) {
+        feed.innerHTML = '<p class="muted">තවම Reviews නැහැ. පළමු Review එක ඔබ ලියන්න!</p>';
+        return;
+      }
+
+      const authorIds = [...new Set(reviews.map(review => review.author_id))];
+      const { data: authors, error: authorsError } = await client
+        .from("members")
+        .select("auth_user_id,username,display_name")
+        .in("auth_user_id", authorIds);
+      if (authorsError) throw authorsError;
+
+      const authorMap = {};
+      (authors || []).forEach(author => { authorMap[author.auth_user_id] = author; });
+
+      feed.innerHTML = "";
+      reviews.forEach(function(review) {
+        const author = authorMap[review.author_id] || {};
+        const name = author.display_name || author.username || "Member";
+        const card = document.createElement("article");
+        card.className = "event";
+        card.style.marginBottom = "12px";
+        const stars = "★".repeat(Number(review.rating)) + "☆".repeat(5 - Number(review.rating));
+        card.innerHTML =
+          '<div class="row"><strong>' + escapeCommunityText(name) + '</strong><span class="muted">' + escapeCommunityText(new Date(review.created_at).toLocaleString()) + '</span></div>' +
+          '<h3>' + escapeCommunityText(review.movie_title) + '</h3>' +
+          '<p aria-label="Rating ' + Number(review.rating) + ' out of 5" style="color:#f5c451;font-size:20px;margin:4px 0">' + stars + ' <span class="muted">(' + Number(review.rating) + '/5)</span></p>' +
+          '<p style="white-space:pre-wrap">' + escapeCommunityText(review.body) + '</p>';
+        feed.appendChild(card);
+      });
+    } catch (error) {
+      feed.textContent = "Reviews ලබාගැනීමට නොහැකි වුණා: " + (error.message || "නොදන්නා දෝෂයක්");
+      console.error("Movie reviews loading issue:", error);
+    }
+  }
+
+  document.getElementById("movieReviewForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const message = document.getElementById("movieReviewMessage");
+    const button = document.getElementById("submitMovieReview");
+    const movieTitle = document.getElementById("reviewMovieTitle").value.trim();
+    const rating = Number(document.getElementById("reviewRating").value);
+    const body = document.getElementById("reviewBody").value.trim();
+
+    const { data: sessionData } = await client.auth.getSession();
+    const user = sessionData.session?.user;
+    if (!user) {
+      showMessage(message, "Review එකක් පළ කිරීමට Login වන්න.", "error");
+      return;
+    }
+    if (!movieTitle || !body || !Number.isInteger(rating) || rating < 1 || rating > 5) {
+      showMessage(message, "චිත්‍රපටයේ නම, තරු 1–5 අතර Rating එකක් සහ Review එක ලියන්න.", "error");
+      return;
+    }
+
+    button.disabled = true;
+    try {
+      const { error } = await client.from("movie_reviews").insert({
+        author_id: user.id,
+        movie_title: movieTitle,
+        rating: rating,
+        body: body
+      });
+      if (error) throw error;
+
+      document.getElementById("movieReviewForm").reset();
+      showMessage(message, "ඔබගේ Review එක සාර්ථකව පළ වුණා!", "success");
+      await loadMovieReviews();
+    } catch (error) {
+      showMessage(message, "Review එක පළ කිරීමට නොහැකි වුණා: " + (error.message || "නොදන්නා දෝෂයක්"), "error");
+    } finally {
+      button.disabled = false;
+    }
+  });
 
   function escapeCommunityText(value) {
     return String(value ?? "").replace(/[&<>"']/g, function(char) {
@@ -451,6 +569,7 @@ if (!window.supabase) {
       if (error) throw error;
       await loadProfile(data.user);
       await loadCommunity();
+      await loadMovieReviews();
       showMessage(loginMessage, "සාර්ථකයි! ඔබ CINEමා WORLD ගිණුමට ඇතුළු වී සිටිනවා.", "success");
       document.getElementById("loginForm").reset();
       logoutButton.style.display = "block";
@@ -465,6 +584,7 @@ if (!window.supabase) {
     else {
       hideProfile();
       document.getElementById("community").style.display = "none";
+      document.getElementById("movieReviews").style.display = "none";
       showMessage(loginMessage, "ඔබ සාර්ථකව Logout වුණා.", "success");
       logoutButton.style.display = "none";
     }
@@ -475,6 +595,7 @@ if (!window.supabase) {
     if (data.session) {
       await loadProfile(data.session.user);
       await loadCommunity();
+      await loadMovieReviews();
       showMessage(loginMessage, "ඔබ දැනටමත් CINEමා WORLD ගිණුමට ඇතුළු වී සිටිනවා.", "success");
       logoutButton.style.display = "block";
     } else hideProfile();

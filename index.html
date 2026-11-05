@@ -63,7 +63,18 @@ footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px
 </form><div id="loginMessage" role="status" aria-live="polite"></div>
 </div></section>
 <section id="memberProfile" style="display:none"><h2>My Profile | මගේ පැතිකඩ</h2><div class="panel">
-<h3 id="profileUsername">Username</h3><p id="profileEmail" class="muted"></p><p id="profileJoined" class="muted"></p><hr>
+<h3 id="profileUsername">Username</h3><p id="profileEmail" class="muted"></p><p id="profileJoined" class="muted"></p>
+<hr>
+<h3>පැතිකඩ වෙනස් කරන්න</h3>
+<form id="editProfileForm">
+<label for="editDisplayName">Display name (පෙන්වන නම)</label>
+<input id="editDisplayName" maxlength="40" placeholder="ඔබට පෙන්වීමට අවශ්‍ය නම">
+<label for="editUsername">Username (පරිශීලක නාමය)</label>
+<input id="editUsername" minlength="3" maxlength="24" required placeholder="ඉංග්‍රීසි අකුරු, ඉලක්කම් හෝ _">
+<button class="primary" id="saveProfileButton" type="submit">Save Changes | වෙනස්කම් සුරකින්න</button>
+<div id="profileMessage" role="status" aria-live="polite"></div>
+</form>
+<hr>
 <p>❤️ My Favourites — ඉදිරියේදී</p><p>⭐ My Reviews — ඉදිරියේදී</p>
 </div></section>
 </main>
@@ -90,13 +101,16 @@ if (!window.supabase) {
       .eq("auth_user_id", user.id)
       .maybeSingle();
 
-    document.getElementById("profileUsername").textContent =
-      data?.display_name || data?.username || user.user_metadata?.username || "Member";
+    const username = data?.username || user.user_metadata?.username || "";
+    const displayName = data?.display_name || username || "Member";
+    document.getElementById("profileUsername").textContent = displayName;
     document.getElementById("profileEmail").textContent = "Email: " + (user.email || "");
     const joined = data?.created_at || user.created_at;
     document.getElementById("profileJoined").textContent = joined
       ? "Joined: " + new Date(joined).toLocaleDateString()
       : "Joined: දිනය ලබාගත නොහැක";
+    document.getElementById("editDisplayName").value = data?.display_name || "";
+    document.getElementById("editUsername").value = username;
     document.getElementById("memberProfile").style.display = "block";
     if (error) console.error("Profile loading issue:", error.message);
   }
@@ -104,6 +118,50 @@ if (!window.supabase) {
   function hideProfile() {
     document.getElementById("memberProfile").style.display = "none";
   }
+
+  document.getElementById("editProfileForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const { data: sessionData } = await client.auth.getSession();
+    const user = sessionData.session?.user;
+    if (!user) {
+      showMessage(document.getElementById("profileMessage"), "කරුණාකර නැවත Login වෙන්න.", "error");
+      return;
+    }
+
+    const username = document.getElementById("editUsername").value.trim();
+    const displayName = document.getElementById("editDisplayName").value.trim();
+    const saveButton = document.getElementById("saveProfileButton");
+    const profileMessage = document.getElementById("profileMessage");
+
+    if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
+      showMessage(profileMessage, "Username එකට ඉංග්‍රීසි අකුරු, ඉලක්කම් සහ _ පමණක් භාවිතා කරන්න (අකුරු 3–24).", "error");
+      return;
+    }
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+    showMessage(profileMessage, "වෙනස්කම් සුරකිමින් පවතී...", "");
+
+    try {
+      const { error } = await client.from("members")
+        .update({ username: username, display_name: displayName || username })
+        .eq("auth_user_id", user.id);
+
+      if (error) throw error;
+
+      document.getElementById("profileUsername").textContent = displayName || username;
+      showMessage(profileMessage, "ඔබගේ පැතිකඩ සාර්ථකව යාවත්කාලීන වුණා!", "success");
+    } catch (error) {
+      let message = error.message || "නොදන්නා දෝෂයක්";
+      if (message.toLowerCase().includes("duplicate") || message.toLowerCase().includes("unique")) {
+        message = "මෙම Username එක වෙනත් සාමාජිකයෙකු භාවිතා කරනවා. වෙනත් නමක් තෝරන්න.";
+      }
+      showMessage(profileMessage, "වෙනස්කම් සුරැකීමට නොහැකි වුණා: " + message, "error");
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = "Save Changes | වෙනස්කම් සුරකින්න";
+    }
+  });
 
   document.getElementById("signupForm").addEventListener("submit", async function(event) {
     event.preventDefault();

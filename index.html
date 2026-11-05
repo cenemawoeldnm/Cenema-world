@@ -452,6 +452,9 @@ card.appendChild(resolveButton);
 });
 
 document.getElementById("editProfileForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const { data: sessionData } = await client.auth.getSession();
     const user = sessionData.session?.user;
     if (!user) {
       showMessage(document.getElementById("profileMessage"), "කරුණාකර නැවත Login වෙන්න.", "error");

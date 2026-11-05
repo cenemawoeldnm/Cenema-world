@@ -292,6 +292,7 @@ if (!window.supabase) {
   showMessage(messageBox, "ලියාපදිංචි සේවාව දැන් ලබාගත නොහැක. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.", "error");
 } else {
   const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+ loadCinemaLibrary();
  async function loadCinemaLibrary() {
   const grid = document.getElementById("featuredMoviesGrid");
   if (!grid) return;

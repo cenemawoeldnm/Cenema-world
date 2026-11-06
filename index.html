@@ -23,6 +23,40 @@ label{font-size:13px;color:#d8dbe5}.form-actions{display:grid;gap:8px}.notice{fo
 #authMessage,#loginMessage{font-size:13px;margin-top:12px;white-space:pre-wrap}.success{color:#7ee0a0}.error{color:#ff9292}
 footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px 12px;font-size:11px}
 @media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.poster{height:150px}}
+/* CINEමා WORLD NEW HERO DESIGN */
+.hero{
+  padding:20px;
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 15% 20%,#64151c 0%,transparent 40%),
+    radial-gradient(circle at 85% 80%,#063c58 0%,transparent 45%),
+    linear-gradient(135deg,#080808,#101522,#16090d);
+  border:1px solid #59343e;
+  box-shadow:0 0 25px #e5091422;
+  overflow:hidden;
+}
+
+.hero-banner{
+  text-align:center;
+  padding:35px 10px;
+  min-height:230px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+.hero-banner h1{
+  font-size:clamp(30px,8vw,55px);
+  color:#f5c45c;
+  text-shadow:0 0 15px #e50914;
+}
+
+.hero-banner p{
+  color:white;
+  font-size:15px;
+  text-align:center;
+}
 </style>
 </head>
 <body>
@@ -47,41 +81,80 @@ footer{text-align:center;color:#8f95a5;border-top:1px solid #292d38;padding:22px
 </header>
 <main>
 <section id="home" class="hero">
- <section id="movieSearch">
-  <h2>🔍 Search Movies | චිත්‍රපට සොයන්න</h2>
-  <div class="panel">
-    <input type="search" id="movieSearchInput"
-      placeholder="චිත්‍රපටයේ නම ඇතුළත් කරන්න...">
-    <p id="movieSearchMessage" class="muted">චිත්‍රපටයක් සොයන්න.</p>
-  </div>
-</section>
-</section>
-<section><h2>Featured Movies</h2>
- <div class="grid" id="featuredMoviesGrid">
-<article class="card">
-  <div class="poster">🎬</div>
-  <span class="pill">FEATURED</span>
-  <h3>සුහද කොකා</h3>
-  <p class="muted">Sinhala Comedy · Film listing demo</p>
-  <button class="details-btn" data-title="සුහද කොකා">විස්තර බලන්න</button>
-</article>
-<article class="card">
-  <div class="poster">🌌</div>
-  <span class="pill">PUBLIC-DOMAIN TEST</span>
-  <h3>Classic Cinema</h3>
-  <p class="muted">A sample slot for rights-cleared films</p>
-  <button class="details-btn" data-title="Classic Cinema">විස්තර බලන්න</button>
-</article>
 
-<article class="card">
-  <div class="poster">🎞️</div>
-  <span class="pill">COMING SOON</span>
-  <h3>World Cinema</h3>
-  <p class="muted">International film collection</p>
-  <button class="details-btn" data-title="World Cinema">විස්තර බලන්න</button>
-</article>
-</div><p class="muted">සටහන: මෙහි චිත්‍රපට නාම පෙන්වන්නේ සැලසුම් ආදර්ශයක් ලෙස පමණයි. අවසර නැති චිත්‍රපට හෝ පෝස්ටර් ප්‍රචාරය/විකාශය නොකරන්න.</p></section>
-<section id="schedule"><h2>Upcoming Movie Rooms</h2><div class="schedule">
+  <div class="hero-banner">
+
+    <h1>CINEමා WORLD</h1>
+
+    <h2>One World. All Movies. One Cinema.</h2>
+
+    <p>ඔබේ සිනමා ලෝකයට සාදරයෙන් පිළිගනිමු!</p>
+
+    <p>🎬 MOVIES &nbsp; | &nbsp; 📺 TV SERIES &nbsp; | &nbsp; 🌍 WORLD CINEMA</p>
+
+  </div>
+
+  <section id="movieSearch">
+    <h2>🔍 Search Movies | චිත්‍රපට සොයන්න</h2>
+
+    <div class="panel">
+      <input type="search" id="movieSearchInput"
+        placeholder="චිත්‍රපටයේ නම ඇතුළත් කරන්න...">
+
+      <p id="movieSearchMessage" class="muted">
+        චිත්‍රපටයක් සොයන්න.
+      </p>
+    </div>
+  </section>
+
+</section>
+<section id="featured">
+  <h2>🔥 Featured Movies | ජනප්‍රිය චිත්‍රපට</h2>
+
+  <p class="muted">
+    Discover your next favourite movie.
+    ඔබ කැමතිම චිත්‍රපටය සොයාගන්න.
+  </p>
+
+  <div class="grid" id="featuredMoviesGrid">
+
+    <article class="card">
+      <div class="poster">🎬</div>
+      <span class="pill">FEATURED</span>
+      <h3>සුහද කොකා</h3>
+      <p class="muted">Sinhala Comedy · Film listing demo</p>
+      <button class="details-btn" data-title="සුහද කොකා">
+        විස්තර බලන්න
+      </button>
+    </article>
+
+    <article class="card">
+      <div class="poster">🌌</div>
+      <span class="pill">PUBLIC-DOMAIN TEST</span>
+      <h3>Classic Cinema</h3>
+      <p class="muted">Rights-cleared classic films</p>
+      <button class="details-btn" data-title="Classic Cinema">
+        විස්තර බලන්න
+      </button>
+    </article>
+
+    <article class="card">
+      <div class="poster">🎞️</div>
+      <span class="pill">COMING SOON</span>
+      <h3>World Cinema</h3>
+      <p class="muted">International film collection</p>
+      <button class="details-btn" data-title="World Cinema">
+        විස්තර බලන්න
+      </button>
+    </article>
+
+  </div>
+
+  <p class="muted">
+    සටහන: අවසර ඇති චිත්‍රපට සහ පෝස්ටර් පමණක් ප්‍රදර්ශනය කරන්න.
+  </p>
+</section>
+ <section id="schedule"><h2>Upcoming Movie Rooms</h2><div class="schedule">
 <div class="event row"><div><strong>Classic Film Night</strong><span class="muted">Rights-cleared title · Community watch</span></div><time>Sat · 7:30 PM</time></div>
 <div class="event row"><div><strong>Sinhala Short Film Hour</strong><span class="muted">Independent creators</span></div><time>Sun · 6:00 PM</time></div>
 <div class="event row"><div><strong>World Cinema Meetup</strong><span class="muted">Film discussion room</span></div><time>Coming soon</time></div>
